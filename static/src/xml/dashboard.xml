@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="inventory_dashboard_template" owl="1">
+        <div class="row">
+            <div class="row mt16">
+                <div class="o_control_panel">
+                    <div class="o_cp_top">
+                        <div class="o_cp_top_left">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item active d-flex align-items-center">
+                                    <span class="text-truncate"
+                                          style="margin-left: 20px;">Dashboard
+                                    </span>
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="o_cp_top_right">
+                            <div class="o-filter-value d-flex align-items-start w-100">
+                                <div class="w-100">
+                                    <select class="date_filter_values o_input me-3"
+                                            id="period-selection"
+                                            required="true"
+                                            t-on-change="onChangePeriod">
+                                        <option value="">Select period</option>
+                                        <option value="last_week">Last 7 Days</option>
+                                        <option value="last_month">Last 30 Days</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <section class="vh-100"
+                         style="background-color: #eee; overflow:auto">
+
+                        <div class="o-scorecard"
+                             style="padding:3.96px;background: #dbdbdb;height: 169px;
+                                    text-align: center;">
+                            <div class="o-title-text" style="
+                                font-size: 18px;
+                                display: inline-block;
+                                color: #525252;
+                                ">Inventory Value
+                            </div>
+                            <div>
+                                <div class="o-key-text " style="
+                                    font-size: 75.4px;
+                                    display: inline-block;
+                                    color: #000000;
+                                    ">
+                                    <p>
+                                        ₹<span  t-esc="state.inventory_value_data"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex"
+                         style="display: flex;gap: 20px;justify-content: center;margin-top: 20px;">
+                            <div class="stock-incoming" style="width: 50%;">
+                            <h4>Stock Incoming</h4>
+                            <canvas id="stockIncomingChart"  width="800" height="500"></canvas>
+                        </div>
+
+                        <div class="stock-incoming" style="width: 50%;">
+                            <h4>Stock Outgoing</h4>
+                            <canvas id="stockOutgoingChart" width="800" height="500"></canvas>
+                        </div>
+
+                    </div>
+                    <div class="stock" style="width: 50%;">
+                            <h4>Location and Stock</h4>
+                            <canvas id="stockLocationChart" width="800" height="500"></canvas>
+                        </div>
+                    <div style="display: flex;gap: 20px;justify-content: center;margin-top: 20px;">
+                        <div class="stock-picking"
+                             style="width: 660px;overflow: auto;height: 350px">
+                            <h4>Transfers Based on Picking Type</h4>
+                            <table class="table align-middle mb-0 bg-white">
+                                <thead class="bg-light ">
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Contact</th>
+                                        <th>Company</th>
+                                    </tr>
+                                </thead>
+                                <tbody t-if="state.stock_picking_type_data">
+                                    <t t-foreach="state.stock_picking_type_data"
+                                       t-as="data" t-key="data.id">
+                                        <tr>
+                                            <td colspan="5"
+                                                style="background: silver;">
+                                                <p class="fw-normal mb-1">
+                                                    <span t-esc="data.display_name"/>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr t-foreach="state.stock_picking_data"
+                                            t-as="picking_data"
+                                            t-key="picking_data.id"
+                                            t-if="picking_data.picking_type_id[0] == data.id">
+                                            <td>
+                                                <p class="fw-normal mb-1">
+                                                    <span t-esc="picking_data.name"  t-on-click="PickingData" />
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">
+                                                    <span t-esc="picking_data.location_id[1]"/>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">
+                                                    <span t-esc="picking_data.location_dest_id[1]"/>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">
+                                                    <span t-esc="picking_data.partner_id[1]"/>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <p class="fw-normal mb-1">
+                                                    <span t-esc="picking_data.company_id[1]"/>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="internal-transfer" style="width: 584px;">
+                            <h4>Internal Transfers</h4>
+                            <table class="table align-middle mb-0 bg-white">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Internal Transfer</th>
+                                        <th>Product</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                    </tr>
+                                </thead>
+                                <tbody t-if="state.location_data">
+                                    <tr t-foreach="state.internal_transfer_data"
+                                        t-as="data" t-key="data[4]"
+                                        t-if="data[1]">
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data[0]"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data[1]"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data[2]"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data[3]"/>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="display: flex;gap: 20px;justify-content: center;margin-top: 20px;">
+                        <div class="stock-picking"
+                             style="width: 660px;overflow: auto;height: 350px">
+                            <h4>Average Product Price</h4>
+                            <table class="table align-middle mb-0 bg-white">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Cost</th>
+                                        <th>Landed Cost</th>
+                                        <th>Total Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody t-if="state.product_average_price_data">
+                                    <tr t-foreach="state.product_average_price_data"
+                                        t-as="data" t-key="data.id">
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data.product_id[1]"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data.former_cost"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data.additional_landed_cost"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data.final_cost"/>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="warehouse-location" style="width: 400px;">
+                            <h4>Warehouse and Location</h4>
+                            <table class="table align-middle mb-0 bg-white">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Warehouse</th>
+                                        <th>Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody t-if="state.warehouse_data">
+                                    <tr t-foreach="state.warehouse_data"
+                                        t-as="data" t-key="data.id">
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data.name"/>
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p class="fw-normal mb-1">
+                                                <span t-esc="data.lot_stock_id[1]"/>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </t>
+</templates>

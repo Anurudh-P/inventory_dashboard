@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record model="ir.module.category" id="inventory_user_group">
+        <field name="name">INVENTORY DASHBOARD</field>
+    </record>
+    <record id="inventory_users" model="res.groups">
+        <field name="name">Inventory User</field>
+        <field name="category_id" ref="inventory_user_group"/>
+    </record>
+    <record id="inventory_manager" model="res.groups">
+        <field name="name">Inventory Manager</field>
+        <field name="category_id" ref="inventory_user_group"/>
+    </record>
+</odoo>
